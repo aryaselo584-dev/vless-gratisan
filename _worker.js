@@ -34,32 +34,32 @@ export default {
     },
 };
 async function getAllConfigVless(hostName) {
-    try {
-        let allConfigs = '';
-        for (const entry of listProxy) {
-            const { path, proxy } = entry;
-            const response = await fetch(`https://ipwhois.app/json/${proxy}`);
-            const data = await response.json();
-            const pathFixed = encodeURIComponent(path);
-            const vlessTls = `vless://51086c4e-1c1a-4379-ba7c-7a23944665ae\u0040${hostName}:443?encryption=none&security=tls&sni=${hostName}&fp=randomized&type=ws&host=${hostName}&path=${pathFixed}#${data.isp} (${data.country_code})`;
-            const vlessNtls = `vless://51086c4e-1c1a-4379-ba7c-7a23944665ae\u0040${hostName}:80?path=${pathFixed}&security=none&encryption=none&host=${hostName}&fp=randomized&type=ws&sni=${hostName}#${data.isp} (${data.country_code})`;
-            const vlessTlsFixed = vlessTls.replace(/ /g, '+');
-            const vlessNtlsFixed = vlessNtls.replace(/ /g, '+');
-            allConfigs += 
-`PATH: ${path}
-COUNTRY: ${data.country}
-ISP: ${data.isp}
-=====================================
+  let allConfigs = '';
+  for (const entry of listProxy) {
+    const { path, proxy } = entry;
+    const pathFixed = encodeURIComponent(path);
+    const vlessTls = `vless://51086c4e-1c1a-4379-ba7c-7a23944665ae@${hostName}:443?encryption=none&security=tls&sni=${hostName}&fp=randomized&type=ws&host=${hostName}&path=${pathFixed}#Proxy+(${proxy})`;
+    const vlessNtls = `vless://51086c4e-1c1a-4379-ba7c-7a23944665ae@${hostName}:80?path=${pathFixed}&security=none&encryption=none&host=${hostName}&fp=randomized&type=ws&sni=${hostName}#Proxy+(${proxy})`;
+    const vlessTlsFixed = vlessTls.replace(/ /g, '+');
+    const vlessNtlsFixed = vlessNtls.replace(/ /g, '+');
+
+    allConfigs += `
+PATH: ${path}
+PROXY: ${proxy}
+======================================
 TLS:
 ${vlessTlsFixed}
-<button class="button" onclick='copyToClipboard("${vlessTlsFixed}")'><i class="fa fa-clipboard"></i>Copy  </button>
-=====================================
+<button class='button' onclick='copyToClipboard("${vlessTlsFixed}")'>Copy</button>
+
 NTLS:
 ${vlessNtlsFixed}
-<button class="button" onclick='copyToClipboard("${vlessNtlsFixed}")'><i class="fa fa-clipboard"></i>Copy  </button>
-=====================================
+<button class='button' onclick='copyToClipboard("${vlessNtlsFixed}")'>Copy</button>
+======================================
 `;
+  }
+  return allConfigs;
 }
+
 
 const htmlConfigs = `
 <!DOCTYPE html>
